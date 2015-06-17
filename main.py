@@ -15,8 +15,8 @@ def analyse_web(root,max_depth):
     page1, stat= get_page(root)
     external = get_external(root)
     crawled = {}
-    tree.add_node(stat.encode('utf8'))
-    print "**root**"
+    tree.add_node(re.sub("[!@#$']", '', stat.encode('utf8')))
+    crawled[re.sub("[!@#$']", '', stat.encode('utf8'))]={'parent':'root'}
     print stat
     for check in external:
         if check != "":
@@ -31,13 +31,6 @@ def analyse_web(root,max_depth):
         count=0;
         child = stat
 
-
-
-
-
-  # root node
-
-
         while tocrawl: 
             crawl_ele = tocrawl.pop()
             link = crawl_ele[0]
@@ -47,12 +40,10 @@ def analyse_web(root,max_depth):
                 content, title = get_page(link)
                 
                 if content == None:
-                    #link = link.encode('latin-1')
-                    #title = title.encode('latin-1')
-                    crawled[link]= title
-                    tree.add_node(title.encode('utf8'), child.encode('utf8'))
-                    print "**child**"
-                    print "top: "+title, "child: "+child
+                    
+                    tree.add_node(re.sub("[!@#$']", '', title.encode('utf8')), re.sub("[!@#$']", '', child.encode('utf8')))
+                    crawled[re.sub("[!@#$']", '', title.encode('utf8'))]={'parent':re.sub("[!@#$']", '', child.encode('utf8'))}
+                    
                     child = title
                     continue
                 host = get_domain(link)
@@ -65,10 +56,10 @@ def analyse_web(root,max_depth):
                    
                     add_to_tocrawl(crawled.keys(),tocrawl, outlinks, depth+1)
                 
-                crawled[link]= title
-                tree.add_node(title.encode('utf8'), child.encode('utf8'))
-                print "**child2**"
-                print "top: "+title, "child: "+child
+                
+                tree.add_node(re.sub("[!@#$']", '', title.encode('utf8')), re.sub("[!@#$']", '', child.encode('utf8')))
+                crawled[re.sub("[!@#$']", '', title.encode('utf8'))]={'parent':re.sub("[!@#$']", '', child.encode('utf8'))}
+                
                 
         """f = open('site_health.txt', 'w')
         for url,status in crawled.iteritems():
@@ -78,7 +69,7 @@ def analyse_web(root,max_depth):
             f.write(status)
             f.write('\n')
         f.close()"""
-    tree.display(stat)
+    return tree,stat,crawled
 
 def get_external(url):
     page = urllib2.urlopen(url)
@@ -148,4 +139,4 @@ def add_to_tocrawl(crawled, tocrawl, newlinks, depth):
             tocrawl.append([link,depth])
 
 
-analyse_web('http://andela.co',2)
+
