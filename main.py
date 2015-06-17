@@ -11,7 +11,7 @@ def analyse_web(root,max_depth):
     crawled = {}
    
     crawled[re.sub("[!@#$']", '', stat.encode('utf8'))]={'parent':'root'}
-    print stat
+    
     for check in external:
         if check != "":
             domain = get_domain(check)
@@ -93,7 +93,6 @@ def is_external(root,host):
     return host != hostname and host.find(hostname) == -1
     
 def get_page(url):
-    #print url
     try:
         response = urllib2.urlopen(url)
         soup = BeautifulSoup(response)
