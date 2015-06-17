@@ -3,19 +3,13 @@ from BeautifulSoup import BeautifulSoup
 from urlparse import urljoin
 from urlparse import urlparse
 import re
-from tree import Tree
 
 
 def analyse_web(root,max_depth):
-    #get root domain
-    
-    
-    #crawl
-    tree = Tree()
     page1, stat= get_page(root)
     external = get_external(root)
     crawled = {}
-    tree.add_node(re.sub("[!@#$']", '', stat.encode('utf8')))
+   
     crawled[re.sub("[!@#$']", '', stat.encode('utf8'))]={'parent':'root'}
     print stat
     for check in external:
@@ -40,8 +34,7 @@ def analyse_web(root,max_depth):
                 content, title = get_page(link)
                 
                 if content == None:
-                    
-                    tree.add_node(re.sub("[!@#$']", '', title.encode('utf8')), re.sub("[!@#$']", '', child.encode('utf8')))
+
                     crawled[re.sub("[!@#$']", '', title.encode('utf8'))]={'parent':re.sub("[!@#$']", '', child.encode('utf8'))}
                     
                     child = title
@@ -55,9 +48,7 @@ def analyse_web(root,max_depth):
                     
                    
                     add_to_tocrawl(crawled.keys(),tocrawl, outlinks, depth+1)
-                
-                
-                tree.add_node(re.sub("[!@#$']", '', title.encode('utf8')), re.sub("[!@#$']", '', child.encode('utf8')))
+
                 crawled[re.sub("[!@#$']", '', title.encode('utf8'))]={'parent':re.sub("[!@#$']", '', child.encode('utf8'))}
                 
                 
@@ -69,7 +60,7 @@ def analyse_web(root,max_depth):
             f.write(status)
             f.write('\n')
         f.close()"""
-    return tree,stat,crawled
+    return crawled
 
 def get_external(url):
     page = urllib2.urlopen(url)
