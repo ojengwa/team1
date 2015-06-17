@@ -1,0 +1,26 @@
+Deep Web link Analysis/ranking:
+
+Problem:
+Link analysis/ranking is a very interesting topic. Some of the top companies on the web made their fortune off one variation of the link/network analysis/ranking one way or the other. We are build a kickass product to knock them of their perch and you are going to lead the engineering team! Your task will be, given a valid web URL and a depth size, to create a command line/GUI tool to scrape, analyse and plot the relationship between the link and any other link that might be visible from that address that are not internal links up to and including the depth specified. Eg: Given the url http://www.andela.com and a depth n, it should find all links that are not in the andela.com domain and visit those links postorder up to a depth equal to n.
+
+Input:
+Any valid web URL and a search depth
+
+Output:
+A graph plot showing the relationship between the pages scraped with the title of each page as the node and the an egde joining each page showing which pages have direct links to the other.
+
+Suggested Tools:
+Matplotlib
+Beautifulsoup/Scrapy
+NetworkX
+Clint/TkInter
+
+Key Results:
+Unit Tests
+Working Prototypes
+>= 70% Test Coverages
+
+Additional Points:
+A GUI application
+Ability to retain user data
+Clocking your solution speed
