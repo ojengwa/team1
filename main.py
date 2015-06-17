@@ -130,4 +130,4 @@ def add_to_tocrawl(crawled, tocrawl, newlinks, depth):
             tocrawl.append([link,depth])
 
 
-analyse_web('http://andela.co',2)
+#analyse_web('http://andela.co',2)
