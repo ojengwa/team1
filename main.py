@@ -84,7 +84,7 @@ def get_domain(url):
 def is_external(root,host):
     if len(host) > 0:
 
-        if host[0] == '/' or host[0] == '#':
+        if host[0] == '/' or host[0] == '#' or host[0] == '?':
             return False
     host = urlparse(host).hostname
     hostname = urlparse(root).hostname
