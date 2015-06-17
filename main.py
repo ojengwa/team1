@@ -3,6 +3,7 @@ from BeautifulSoup import BeautifulSoup
 from urlparse import urljoin
 from urlparse import urlparse
 import re
+from tree import Tree
 
 
 def analyse_web(root,max_depth):
@@ -10,9 +11,13 @@ def analyse_web(root,max_depth):
     
     
     #crawl
+    tree = Tree()
     page1, stat= get_page(root)
     external = get_external(root)
     crawled = {}
+    tree.add_node(stat.encode('utf8'))
+    print "**root**"
+    print stat
     for check in external:
         if check != "":
             domain = get_domain(check)
@@ -24,7 +29,15 @@ def analyse_web(root,max_depth):
         tocrawl = [[check,1]]
         
         count=0;
-        
+        child = stat
+
+
+
+
+
+  # root node
+
+
         while tocrawl: 
             crawl_ele = tocrawl.pop()
             link = crawl_ele[0]
@@ -37,6 +50,10 @@ def analyse_web(root,max_depth):
                     #link = link.encode('latin-1')
                     #title = title.encode('latin-1')
                     crawled[link]= title
+                    tree.add_node(title.encode('utf8'), child.encode('utf8'))
+                    print "**child**"
+                    print "top: "+title, "child: "+child
+                    child = title
                     continue
                 host = get_domain(link)
                 
@@ -45,12 +62,13 @@ def analyse_web(root,max_depth):
 
                     outlinks = get_all_links(content,link)
                     
-                    print '-----------------------------------'
-                    print 'Adding outlinks ' + str(outlinks) + ' for parent page '+link
-                    print '-----------------------------------'
+                   
                     add_to_tocrawl(crawled.keys(),tocrawl, outlinks, depth+1)
                 
                 crawled[link]= title
+                tree.add_node(title.encode('utf8'), child.encode('utf8'))
+                print "**child2**"
+                print "top: "+title, "child: "+child
                 
         """f = open('site_health.txt', 'w')
         for url,status in crawled.iteritems():
@@ -60,7 +78,7 @@ def analyse_web(root,max_depth):
             f.write(status)
             f.write('\n')
         f.close()"""
-    print crawled
+    tree.display(stat)
 
 def get_external(url):
     page = urllib2.urlopen(url)
@@ -130,4 +148,4 @@ def add_to_tocrawl(crawled, tocrawl, newlinks, depth):
             tocrawl.append([link,depth])
 
 
-#analyse_web('http://andela.co',2)
+analyse_web('http://andela.co',2)
