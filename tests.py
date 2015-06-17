@@ -25,13 +25,13 @@ class WebTestCase(unittest.TestCase):
             external,
             msg='External links should not include host domain'
         )
+
+    
+
+
+
         
 
-
-
-
-    
-    
 
 
 if __name__ == '__main__':
