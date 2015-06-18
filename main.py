@@ -8,12 +8,13 @@ import re
 def analyse_web(root,max_depth):
     if type(max_depth) == str:
         max_depth = int(max_depth)
+    print "*** Fetching external links for "+root
     page1, stat= get_page(root)
     external = get_external(root)
     crawled = {}
     crawldepth = {}
     crawled[re.sub("[!@#$']", '', stat.encode('utf8'))]={'parent':'root'}
-    
+    print "*** "+`len(external)`+" link(s) found on "+root
     for check in external:
         if check != "":
             domain = get_domain(check)
@@ -33,9 +34,11 @@ def analyse_web(root,max_depth):
             depth = crawl_ele[1]
 
 
-            print crawl_ele
+            
             
             if link not in crawled.keys():
+                if link is not None:
+                    print "*** Fetching data from "+link
                 content, title = get_page(link)
                 
 
@@ -50,16 +53,16 @@ def analyse_web(root,max_depth):
                 if depth < max_depth and host in filter_domain :
 
                     outlinks = get_all_links(content,link)
-                    
+                    print "*** "+`len(outlinks)`+" link(s) found on "+link
                    
                     add_to_tocrawl(crawled.keys(),tocrawl, outlinks, depth+1)
                 
-                print depth
+                
 
                 if depth == 1:
                     crawled[re.sub("[!@#$']", '', title.encode('utf8'))]={'parent':re.sub("[!@#$']", '', stat.encode('utf8'))}
                 else:
-                    print crawldepth[depth-1]
+                    
                     crawled[re.sub("[!@#$']", '', title.encode('utf8'))]={'parent':re.sub("[!@#$']", '', crawldepth[depth-1].encode('utf8'))}
                 
                 
