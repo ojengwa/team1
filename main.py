@@ -6,6 +6,8 @@ import re
 
 
 def analyse_web(root,max_depth):
+    if type(max_depth) == str:
+        max_depth = int(max_depth)
     page1, stat= get_page(root)
     external = get_external(root)
     crawled = {}
@@ -29,6 +31,9 @@ def analyse_web(root,max_depth):
             crawl_ele = tocrawl.pop()
             link = crawl_ele[0]
             depth = crawl_ele[1]
+
+
+            print crawl_ele
             
             if link not in crawled.keys():
                 content, title = get_page(link)
@@ -48,12 +53,18 @@ def analyse_web(root,max_depth):
                     
                    
                     add_to_tocrawl(crawled.keys(),tocrawl, outlinks, depth+1)
+                else:
+                    break
+                print depth
 
                 if depth == 1:
                     crawled[re.sub("[!@#$']", '', title.encode('utf8'))]={'parent':re.sub("[!@#$']", '', stat.encode('utf8'))}
                 else:
+                    print crawldepth[depth-1]
                     crawled[re.sub("[!@#$']", '', title.encode('utf8'))]={'parent':re.sub("[!@#$']", '', crawldepth[depth-1].encode('utf8'))}
                 
+                
+       
     return crawled
 
 def get_external(url):
