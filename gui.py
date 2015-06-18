@@ -1,148 +1,136 @@
-from tkinter import*
-import tkinter.messagebox
-from main import *
-import networkx as nx
-import matplotlib.pyplot as plt
-import graph
+import urllib2
+from BeautifulSoup import BeautifulSoup
+from urlparse import urljoin
+from urlparse import urlparse
+import re
 
 
-import Tkinter
-import tkMessageBox
-from main import *
-import networkx as nx
-import matplotlib.pyplot as plt
-import graph
-import sys
+def analyse_web(root,max_depth):
+    if type(max_depth) == str:
+        max_depth = int(max_depth)
+    print "*** Fetching external links for "+root
+    page1, stat= get_page(root)
+    external = get_external(root)
+    crawled = {}
+    crawldepth = {}
+    crawled[re.sub("[!@#$']", '', stat.encode('utf8'))]={'parent':'root'}
+    print "*** "+`len(external)`+" link(s) found on "+root
+    for check in external:
+        if check != "":
+            domain = get_domain(check)
+        else:
+            continue
+
+        filter_domain = [domain]
+        #set domain and depth
+        tocrawl = [[check,1]]
+        
+        #page1, child= get_page(check)
+        child = stat
+
+        while tocrawl: 
+            crawl_ele = tocrawl.pop()
+            link = crawl_ele[0]
+            depth = crawl_ele[1]
 
 
-reload(sys)
-sys.setdefaultencoding("utf-8")
-
-
-def changeLabel():
-    site = link.get()
-    num = depthname.get()
-
-    headertext.set("Loading data from "+site+", please wait...")
-
-
-    (_ROOT, _DEPTH, _BREADTH) = range(3)
-
-    G=nx.Graph()
-    crawl = analyse_web(site,num)
-
-
-    for child in crawl:
-        print child,crawl[child]
-        G.add_node(child)
-        if crawl[child]['parent'] != 'root':
             
-            G.add_edge(crawl[child]['parent'],child)
+            
+            if link not in crawled.keys():
+                if link is not None:
+                    print "*** Fetching data from "+link
+                content, title = get_page(link)
+                
 
-             # display
+                if content == None:
+                    
+                    continue
+                else:
+                    crawldepth[depth]=title
+                host = get_domain(link)
+                
+                
+                if depth < max_depth and host in filter_domain :
 
-    nx.draw(G,node_size=20,alpha=0.5,node_color="blue", with_labels=True)
-    plt.savefig("node_colormap.png") # save as png
-    plt.show()
+                    outlinks = get_all_links(content,link)
+                    print "*** "+`len(outlinks)`+" link(s) found on "+link
+                   
+                    add_to_tocrawl(crawled.keys(),tocrawl, outlinks, depth+1)
+                
+                
 
-#def aboutProject():
-#    tkinter.messagebox.showinfo("A MINI app to display The Web as a graph to Depth n")
-#    return
+                if depth == 1:
+                    crawled[re.sub("[!@#$']", '', title.encode('utf8'))]={'parent':re.sub("[!@#$']", '', stat.encode('utf8'))}
+                else:
+                    
+                    crawled[re.sub("[!@#$']", '', title.encode('utf8'))]={'parent':re.sub("[!@#$']", '', crawldepth[depth-1].encode('utf8'))}
+                
+                
+       
+    return crawled
+
+def get_external(url):
+    page = urllib2.urlopen(url)
+    soup = BeautifulSoup(page)
+    return [l.get('href') for l in soup.findAll('a') if is_external(url,l.get('href'))]
+    
+
+def get_domain(url):
+    
+    hostname = urlparse(url).hostname
+    
+    if len(re.findall( r'[0-9]+(?:\.[0-9]+){3}', hostname)) > 0:
+        return hostname
+    elif len(hostname.split('.')) == 0:
+        hostname
+    elif hostname.find('www.') != -1:
+        return hostname.split('.')[0]
+    else:
+        return hostname.split('.')[1]
+
+def is_external(root,host):
+    if len(host) > 0:
+
+        if host[0] == '/' or host[0] == '#' or host[0] == '?':
+            return False
+    host = urlparse(host).hostname
+    hostname = urlparse(root).hostname
+    if host == None:
+        return False
+    return host != hostname and host.find(hostname) == -1
+    
+def get_page(url):
+    try:
+        response = urllib2.urlopen(url)
+        soup = BeautifulSoup(response)
+        
+        return soup, soup.title.string
+    except urllib2.HTTPError,e:
+        return None, str(e.code)
+    except urllib2.URLError,e:
+        return None, 'Invalid Url'
+    except:
+        return None, 'Wrong Url'
+    
+def get_next_target(page,parent):
+    
+    page.findAll('a')
+    page.get('href')
+    start_link = page.find('<a href=')
+    if start_link == -1: 
+        return None, 0
+    start_quote = page.find('"', start_link)
+    end_quote = page.find('"', start_quote + 1)
+    url = page[start_quote + 1:end_quote]
+    url = urljoin(parent,url)
+    return url, end_quote
+
+def get_all_links(page,parent):
+    return [l.get('href') for l in page.findAll('a') ]
+    
 
 
-app =  Tkinter.Tk()
-app.title("LINK ANALYSER")
-app.geometry('450x300+200+200')
-
-#menubar = Menu(app)
-#filemenu = Menu(menubar, tearoff=0)
-#filemenu.add_command(label="Quit", command=app.quit)
-#menubar.add_cascade(label="File", menu=filemenu)
-
-#helpmenu = Menu(menubar, tearoff=0)
-#helpmenu.add_command(label="About Me", command=aboutProject)
-#menubar.add_cascade(label="Help", menu=helpmenu)
-
-#app.config(menu=menubar)
-
-headertext = Tkinter.StringVar()
-headertext.set("")
-label0 = Tkinter.Label(app,textvariable=headertext,height=4)
-label0.pack()
-
-labeltext = Tkinter.StringVar()
-labeltext.set("Website url")
-label1 = Tkinter.Label(app,textvariable=labeltext,height=1)
-label1.pack()
-
-url = Tkinter.StringVar(None)
-link = Tkinter.Entry(app,textvariable=url)
-link.pack()
-
-labeltext = Tkinter.StringVar()
-labeltext.set("Depth")
-label1 = Tkinter.Label(app,textvariable=labeltext,height=1)
-label1.pack()
-
-deptvalue = Tkinter.IntVar(None)
-depthname = Tkinter.Entry(app,textvariable=deptvalue)
-depthname.pack()
-
-button1 = Tkinter.Button(app,text="Submit",width=20,command=changeLabel)
-button1.pack(side='bottom' ,padx=15,pady=15)
-
-app.mainloop()
-def clicked():
-
-	site = link.get()
-	num = depthname.get()
-
-	(_ROOT, _DEPTH, _BREADTH) = range(3)
-
-	G=nx.Graph()
-	data,root = analyse_web(site,num)
-
-	children = data[root].children
-	parent[depth] = root
-	G.add_node('root')
-	    
-
-	depth += 1
-
-	for child in children:
-
-	    G.add_node(format(children))
-	    
-	    G.add_edge(format(children),'root')
-
-	         # display
-	plot(data,root,G)
-	nx.draw(G)
-	plt.savefig("node_colormap.png") # save as png
-	plt.show()
-
-app =  Tkinter.Tk()
-app.title("LINK ANALYSER.......")
-app.geometry('450x300+200+200')
-
-labeltext = Tkinter.StringVar()
-labeltext.set("Click button to analyse data")
-label1 = Tkinter.Label(app,textvariable=labeltext,height=4)
-label1.pack()
-
-checkboxval = Tkinter.IntVar()
-checkbox1 = Tkinter.Checkbutton(app,variable=checkboxval,text="Happy?")
-checkbox1.pack()
-
-url = Tkinter.StringVar(None)
-link = Tkinter.Entry(app,textvariable=url)
-link.pack()
-
-Deptvalue = Tkinter.IntVar(None)
-depthname = Tkinter.Entry(app,textvariable=Deptvalue)
-depthname.pack()
-
-button1 = Tkinter.Button(app,text="Click Here",width=20,command=clicked)
-button1.pack(side='bottom' ,padx=15,pady=15)
-
-app.mainloop()
+def add_to_tocrawl(crawled, tocrawl, newlinks, depth):
+    for link in newlinks:
+        if link not in tocrawl and link not in crawled:
+            tocrawl.append([link,depth])
