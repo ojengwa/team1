@@ -4,7 +4,6 @@ import tkMessageBox
 from main import *
 import networkx as nx
 import matplotlib.pyplot as plt
-import graph
 import sys
 from threading import Thread
 from time import clock
