@@ -53,8 +53,7 @@ def analyse_web(root,max_depth):
                     
                    
                     add_to_tocrawl(crawled.keys(),tocrawl, outlinks, depth+1)
-                else:
-                    break
+                
                 print depth
 
                 if depth == 1:
