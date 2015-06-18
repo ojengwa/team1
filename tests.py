@@ -25,6 +25,13 @@ class WebTestCase(unittest.TestCase):
             external,
             msg='External links should not include host domain'
         )
+
+    def test_get_crawl(self):
+        crawl = analyse_web('http://andela.co',"1")
+        self.assertTrue((type(crawl) is dict), msg='The analyse_web function should return a dictionary and it should accept string as depth')
+
+
+
         
     def test_is_external(self):
         external = is_external('http://andela.co','/home')
