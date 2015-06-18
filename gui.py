@@ -5,7 +5,6 @@ from main import *
 import networkx as nx
 import matplotlib.pyplot as plt
 import sys
-from threading import Thread
 from time import clock
 
 
