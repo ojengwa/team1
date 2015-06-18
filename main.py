@@ -9,7 +9,7 @@ def analyse_web(root,max_depth):
     page1, stat= get_page(root)
     external = get_external(root)
     crawled = {}
-   
+    crawldepth = {}
     crawled[re.sub("[!@#$']", '', stat.encode('utf8'))]={'parent':'root'}
     
     for check in external:
@@ -22,7 +22,7 @@ def analyse_web(root,max_depth):
         #set domain and depth
         tocrawl = [[check,1]]
         
-        count=0;
+        #page1, child= get_page(check)
         child = stat
 
         while tocrawl: 
@@ -33,12 +33,12 @@ def analyse_web(root,max_depth):
             if link not in crawled.keys():
                 content, title = get_page(link)
                 
-                if content == None:
 
-                    crawled[re.sub("[!@#$']", '', title.encode('utf8'))]={'parent':re.sub("[!@#$']", '', child.encode('utf8'))}
+                if content == None:
                     
-                    child = title
                     continue
+                else:
+                    crawldepth[depth]=title
                 host = get_domain(link)
                 
                 
@@ -49,17 +49,11 @@ def analyse_web(root,max_depth):
                    
                     add_to_tocrawl(crawled.keys(),tocrawl, outlinks, depth+1)
 
-                crawled[re.sub("[!@#$']", '', title.encode('utf8'))]={'parent':re.sub("[!@#$']", '', child.encode('utf8'))}
+                if depth == 1:
+                    crawled[re.sub("[!@#$']", '', title.encode('utf8'))]={'parent':re.sub("[!@#$']", '', stat.encode('utf8'))}
+                else:
+                    crawled[re.sub("[!@#$']", '', title.encode('utf8'))]={'parent':re.sub("[!@#$']", '', crawldepth[depth-1].encode('utf8'))}
                 
-                
-        """f = open('site_health.txt', 'w')
-        for url,status in crawled.iteritems():
-            f.write(url)
-            f.write('\t')
-            f.write('\t')
-            f.write(status)
-            f.write('\n')
-        f.close()"""
     return crawled
 
 def get_external(url):
