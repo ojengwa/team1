@@ -10,7 +10,7 @@ def analyse_web(root,max_depth):
         max_depth = int(max_depth)
     print "*** Fetching external links for "+root
     page1, stat= get_page(root)
-    external = get_external(root)
+    external = get_external(page1,root)
     crawled = {}
     crawldepth = {}
     crawled[re.sub("[!@#$']", '', stat.encode('utf8'))]={'parent':'root'}
@@ -69,9 +69,8 @@ def analyse_web(root,max_depth):
        
     return crawled
 
-def get_external(url):
-    page = urllib2.urlopen(url)
-    soup = BeautifulSoup(page)
+def get_external(soup,url):
+    
     return [l.get('href') for l in soup.findAll('a') if is_external(url,l.get('href'))]
     
 
