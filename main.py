@@ -1,6 +1,5 @@
 import urllib2
 from BeautifulSoup import BeautifulSoup
-from urlparse import urljoin
 from urlparse import urlparse
 import re
 
@@ -26,8 +25,7 @@ def analyse_web(root,max_depth):
         #set domain and depth
         tocrawl = [[check,1]]
         
-        #page1, child= get_page(check)
-        child = stat
+        
 
         while tocrawl: 
             crawl_ele = tocrawl.pop()
