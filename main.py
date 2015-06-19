@@ -10,10 +10,11 @@ def analyse_web(root,max_depth):
         max_depth = int(max_depth)
     print "*** Fetching external links for "+root
     page1, stat= get_page(root)
+    stat = re.sub("[!@#$']", '', stat.encode('utf8'))
     external = get_external(page1,root)
     crawled = {}
     crawldepth = {}
-    crawled[re.sub("[!@#$']", '', stat.encode('utf8'))]={'parent':'root'}
+    crawled[stat]={'parent':'root'}
     print "*** "+`len(external)`+" link(s) found on "+root
     for check in external:
         if check != "":
@@ -37,9 +38,10 @@ def analyse_web(root,max_depth):
             
             
             if link not in crawled.keys():
-                if link is not None:
+                if link is not None and link != '#' and link != '/' and link != '?':
                     print "*** Fetching data from "+link
                 content, title = get_page(link)
+                title = re.sub("[!@#$']", '', title.encode('utf8'))
                 
 
                 if content == None:
@@ -60,10 +62,10 @@ def analyse_web(root,max_depth):
                 
 
                 if depth == 1:
-                    crawled[re.sub("[!@#$']", '', title.encode('utf8'))]={'parent':re.sub("[!@#$']", '', stat.encode('utf8'))}
+                    crawled[title]={'parent':stat}
                 else:
                     
-                    crawled[re.sub("[!@#$']", '', title.encode('utf8'))]={'parent':re.sub("[!@#$']", '', crawldepth[depth-1].encode('utf8'))}
+                    crawled[title]={'parent':crawldepth[depth-1]}
                 
                 
        
