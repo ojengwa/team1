@@ -14,7 +14,7 @@ app = None
 link = None
 depthname = None
 
-def display_gui():
+def display_gui(web='',dept=1):
     global app, link, depthname
     app =  Tkinter.Tk()
     app.title("LINK ANALYSER")
@@ -47,7 +47,8 @@ def display_gui():
     label1.pack()
 
     url = Tkinter.StringVar(None)
-    link = Tkinter.Entry(app,textvariable=url)
+    url.set(web)
+    link = Tkinter.Entry(app,textvariable=url,)
     link.pack()
 
     labeltext = Tkinter.StringVar()
@@ -56,7 +57,8 @@ def display_gui():
     label1.pack()
 
     deptvalue = Tkinter.IntVar(None)
-    depthname = Tkinter.Entry(app,textvariable=deptvalue)
+    deptvalue.set(dept)
+    depthname = Tkinter.Entry(app,textvariable=deptvalue,text=dept)
     depthname.pack()
 
     button1 = Tkinter.Button(app,text="Submit",width=20,command=changeLabel)
@@ -66,7 +68,7 @@ def display_gui():
 
 
 def do_get(site,num):
-    
+    start = clock()
     (_ROOT, _DEPTH, _BREADTH) = range(3)
     print site,num
     G=nx.Graph()
@@ -86,6 +88,7 @@ def do_get(site,num):
     nx.draw(G,node_size=20,alpha=0.5,node_color="blue", with_labels=True)
     #fig, ax = plt.subplots()
     plt.savefig("node_colormap.png") # save as png
+    print ("Total time: "+`clock() - start`)
     plt.show()
     
     
@@ -100,5 +103,15 @@ def changeLabel():
         tkMessageBox.showinfo("Error","The url is invalid")
         return
     elif int(num)<1:
-        tkMessageBox.showinfo("Error","The depth should be greater than or equal to 1")
+        tkMessageBox.showinfo("Error","The depth should be greater than 1")
         return
+    app.destroy()
+    
+    #display_gui()
+    #t1.join()
+    start = clock()
+    do_get(site,num)
+    
+
+    display_gui(site,num)
+    
