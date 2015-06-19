@@ -17,15 +17,16 @@ class WebTestCase(unittest.TestCase):
             type(page),
             msg='Should return a BeautifulSoup instance'
         )
-
-    def test_get_external(self):
-        external = get_external('http://andela.co')
+        external = get_external(page,'http://andela.co')
         self.assertNotIn(
             'andela.co',
             external,
             msg='External links should not include host domain'
         )
 
+
+    
+        
     def test_get_crawl(self):
         crawl = analyse_web('http://andela.co',"1")
         self.assertTrue((type(crawl) is dict), msg='The analyse_web function should return a dictionary and it should accept string as depth')
