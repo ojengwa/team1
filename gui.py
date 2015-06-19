@@ -109,7 +109,6 @@ def changeLabel():
     
     #display_gui()
     #t1.join()
-    start = clock()
     do_get(site,num)
     
 
