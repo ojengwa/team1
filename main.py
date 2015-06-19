@@ -113,18 +113,7 @@ def get_page(url):
     except:
         return None, 'Wrong Url'
     
-def get_next_target(page,parent):
-    
-    page.findAll('a')
-    page.get('href')
-    start_link = page.find('<a href=')
-    if start_link == -1: 
-        return None, 0
-    start_quote = page.find('"', start_link)
-    end_quote = page.find('"', start_quote + 1)
-    url = page[start_quote + 1:end_quote]
-    url = urljoin(parent,url)
-    return url, end_quote
+
 
 def get_all_links(page,parent):
     return [l.get('href') for l in page.findAll('a') ]
